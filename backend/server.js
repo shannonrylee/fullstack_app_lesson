@@ -1,26 +1,18 @@
 const express = require("express");
-const routes = require("./routes");
-const db = require("./db");
-const logger = require("morgan");
-const cors = require("cors");
-
 const PORT = process.env.PORT || 3001;
 
 const app = express();
 
-app.use(express.json());
+// MIDDLEWARE
+app.use(express.static(`${__dirname}/client/build`));
 
-app.use(logger("dev"));
+// ROUTES
+app.get("/restaurants", (req, res) => {
+  res.send("root route hit");
+});
 
-app.use(cors({ credentials: true, origin: true }));
+app.get("/*", (req, res) => {
+  res.sendFile(`${__dirname}/client/build/index.html`);
+});
 
-app.options("*", cors());
-
-app.use("/api", routes);
-
-db.on(
-  "error",
-  console.error.bind(console, "Cabana Day MongoDB connection error:")
-);
-
-app.listen(PORT, () => console.log(`Listening on port: ${PORT}`));
+app.listen(PORT, () => console.log("server is running at PORT", PORT));
